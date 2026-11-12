@@ -1,0 +1,20 @@
+package com.example.minitasks.domain;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class TaskTest {
+
+    @Test
+    void newTaskShouldNotBeDone() {
+        var task = new Task("Comprar leche");
+        assertThat(task.isDone()).isFalse();
+    }
+
+    @Test
+    void taskKeepsItsTitle() {
+        var task = new Task("Comprar leche");
+        assertThat(task.getTitle()).isEqualTo("Comprar leche");
+    }
+}
