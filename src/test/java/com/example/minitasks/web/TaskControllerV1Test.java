@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,5 +51,12 @@ class TaskControllerV1Test {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Para consultar"))
                 .andExpect(jsonPath("$.done").value(false));
+    }
+
+    @Test
+    void missingTaskReturns404() throws Exception {
+        mvc.perform(get("/v1/tasks/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
     }
 }
