@@ -30,10 +30,11 @@ public class TaskControllerV1 {
 
     @GetMapping("/{id}")
     public ResponseEntity<SimpleTask> get(@PathVariable("id") long id) {
-        return ResponseEntity.ok(tasks.stream()
+        return tasks.stream()
                 .filter(task -> task.id() == id)
                 .findFirst()
-                .orElseThrow());
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
