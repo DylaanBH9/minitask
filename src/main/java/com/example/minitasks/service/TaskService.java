@@ -16,7 +16,7 @@ public class TaskService {
     }
 
     public TaskResponseDTO createTask(CreateTaskDTO dto) {
-        Task saved = repository.save(new Task(dto.title()));
+        Task saved = repository.save(new Task(dto.title().strip()));
         return new TaskResponseDTO(saved.getId(), saved.getTitle(), saved.isDone());
     }
 }
