@@ -31,4 +31,14 @@ class TaskServiceTest {
 
         assertThat(result.title()).isEqualTo("Repasar Spring Boot");
     }
+
+    @Test
+    void createKeepsCleanTitleAndDoneFalse() {
+        when(repository.save(any(Task.class))).thenAnswer(call -> call.getArgument(0));
+
+        TaskResponseDTO result = service.createTask(new CreateTaskDTO("Repasar Spring Boot"));
+
+        assertThat(result.title()).isEqualTo("Repasar Spring Boot");
+        assertThat(result.done()).isFalse();
+    }
 }
