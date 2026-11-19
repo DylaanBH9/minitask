@@ -32,3 +32,25 @@ sesión es el ciclo rojo-verde del GET por id.
 - **`CreateTaskDTO`** — dato de entrada del POST (`title`).
 - **`Task`** — entidad JPA (`id`, `title`, `done`) con su migración Flyway
   `V1__create_tasks_table.sql`; por ahora solo la usan sus tests.
+
+## Sesión 4 — capa de servicio y normalización del título
+
+El recorrido de una creación pasa a ser
+`petición → controlador → servicio → repositorio → H2`, y la respuesta pública
+es ya `TaskResponseDTO` (`id`, `title`, `done`).
+
+| Test | Rojo observado | Cambio que lo hizo pasar | Verde |
+|------|----------------|--------------------------|-------|
+| `TaskServiceTest#createStripsTitleEdges` | `AssertionFailedError`: el servicio guardaba `dto.title()` sin normalizar, así que devolvía `"  Repasar Spring Boot  "` con los espacios | `dto.title().strip()` en `TaskService.createTask` | `mvn test` en verde |
+| `TaskServiceTest#createKeepsCleanTitleAndDoneFalse` | Nace en verde | — | Un título ya limpio se guarda igual y `done=false` |
+
+### Responsabilidades de las capas (estado de la sesión 4)
+
+- **`TaskService`** — casos de uso: crea tareas con el título sin espacios en
+  los extremos y traduce `Task` a `TaskResponseDTO`. No conoce HTTP.
+- **`TaskRepository`** — interfaz `JpaRepository<Task, Long>`; el acceso a los
+  datos pasa por Hibernate sobre H2, con `ddl-auto: validate` contra lo que
+  crea Flyway.
+- **`TaskResponseDTO`** — contrato de salida de la API (`id`, `title`,
+  `done`).
+- **`CreateTaskDTO`** — contrato de entrada del POST, compartido por V1 y V2.
