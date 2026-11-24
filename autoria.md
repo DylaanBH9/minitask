@@ -10,5 +10,4 @@
 - **Punto de partida:** `b45d167` (`chore: iniciar el repositorio mini-tasks con Spring Boot 4 y Java 25`), creado en la primera sesión el 10 de noviembre de 2026.
 
 Todo el historial de commits y la totalidad del código y los tests son
-aportaciones propias desarrolladas para la asignatura. Las fechas de los
-commits reflejan las sesiones en las que se realizó cada parte del trabajo.
+aportaciones propias desarrolladas para la asignatura.

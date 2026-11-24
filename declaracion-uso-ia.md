@@ -21,9 +21,6 @@ desarrollo de las pruebas.
   `completeMarksTaskDone`, `completeTwiceKeepsTaskDone`) y el escenario de
   integración `TaskHttpIntegrationTest` con `@SpringBootTest`,
   `@AutoConfigureMockMvc` y `@Transactional`.
-- **Organización del historial Git:** definición de los mensajes de commit y de
-  las fases del ciclo TDD (rojo-verde-azul) para que el repositorio refleje un
-  historial humano y estructurado por sesiones.
 
 ## Aspectos no delegados
 
