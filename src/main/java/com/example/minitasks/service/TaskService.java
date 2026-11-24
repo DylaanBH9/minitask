@@ -19,4 +19,8 @@ public class TaskService {
         Task saved = repository.save(new Task(dto.title().strip()));
         return new TaskResponseDTO(saved.getId(), saved.getTitle(), saved.isDone());
     }
+
+    public TaskResponseDTO completeTask(Long id) {
+        throw new UnsupportedOperationException("Pending implementation");
+    }
 }

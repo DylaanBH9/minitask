@@ -45,4 +45,8 @@ public class Task {
     public void setDone(boolean done) {
         this.done = done;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
