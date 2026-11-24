@@ -2,6 +2,7 @@ package com.example.minitasks.web;
 
 import com.example.minitasks.dto.CreateTaskDTO;
 import com.example.minitasks.dto.TaskResponseDTO;
+import com.example.minitasks.domain.exceptions.TaskNotFoundException;
 import com.example.minitasks.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,5 +47,14 @@ class TaskControllerV2Test {
         mvc.perform(patch("/v2/tasks/1/complete"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.done").value(true));
+    }
+
+    @Test
+    void completingMissingTaskReturns404() throws Exception {
+        when(service.completeTask(999L)).thenThrow(new TaskNotFoundException(999L));
+
+        mvc.perform(patch("/v2/tasks/999/complete"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
     }
 }
