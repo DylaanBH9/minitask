@@ -54,3 +54,36 @@ es ya `TaskResponseDTO` (`id`, `title`, `done`).
 - **`TaskResponseDTO`** — contrato de salida de la API (`id`, `title`,
   `done`).
 - **`CreateTaskDTO`** — contrato de entrada del POST, compartido por V1 y V2.
+
+## Cierre — slice vertical: PATCH /v2/tasks/{id}/complete
+
+Conecta las cuatro capas (`TaskControllerV2` → `TaskService` → `TaskRepository`
+→ H2) para completar una tarea de extremo a extremo, respondiendo `404` cuando el
+id no existe.
+
+| Test | Rojo observado | Cambio que lo hizo pasar | Verde |
+|------|----------------|--------------------------|-------|
+| `TaskServiceTest#completeMarksTaskDone` | `UnsupportedOperationException: Pending implementation` | `completeTask`: busca por id, `setDone(true)` y guarda | `mvn test` en verde |
+| `TaskServiceTest#completeTwiceKeepsTaskDone` | `UnsupportedOperationException: Pending implementation` | Comprueba que `completeTask` es idempotente: una tarea ya completada permanece en `done=true` | `mvn test` en verde |
+| `TaskControllerV2Test#completesTask` | `Status expected:<200> but was:<404>`: no existía el mapeo `@PatchMapping` | Método `complete` en `TaskControllerV2` delegando en el servicio | `mvn test` en verde |
+| `TaskControllerV2Test#completingMissingTaskReturns404` | `ServletException` por `TaskNotFoundException` sin captura | Bloque `try/catch` en el controlador que traduce la excepción a `ResponseEntity.notFound().build()` | `mvn test` en verde |
+| `TaskHttpIntegrationTest#createsCompletesAndFailsForMissingTask` | Nace en verde | — | Recorrido HTTP real con MockMvc sobre H2 real: POST con espacios → `201` con título limpio; PATCH → `200` y `done=true`; PATCH inexistente → `404` |
+
+### Responsabilidades finales por capas
+
+- **`TaskControllerV2`** — controlador REST de V2. Delegación limpia en
+  `TaskService`, construye `201` con `Location` en la creación y captura
+  `TaskNotFoundException` para responder `404` sin cuerpo en la modificación.
+- **`TaskService`** — capa de negocio. Contiene los casos de uso
+  (`createTask`, `completeTask`), aplica las reglas (normalización del título
+  con `strip()`, cambio de estado `done=true`) y transforma las entidades
+  `Task` a `TaskResponseDTO`. Lanza la excepción de dominio `TaskNotFoundException`.
+- **`TaskRepository`** — capa de acceso a datos (`JpaRepository<Task, Long>`).
+  Gestionada por Spring Data JPA y Hibernate con `ddl-auto: validate`.
+- **`Task`** — entidad persistente JPA mapeada a la tabla `tasks` creada por
+  la migración V1 de Flyway.
+- **`TaskResponseDTO` / `CreateTaskDTO`** — representaciones públicas de
+  salida y entrada, aislando los contratos JSON de la entidad JPA.
+- **`TaskNotFoundException`** — excepción de dominio de la capa de servicio
+  cuando la tarea no existe en base de datos.
+
