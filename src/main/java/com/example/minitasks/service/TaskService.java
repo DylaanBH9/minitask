@@ -1,6 +1,7 @@
 package com.example.minitasks.service;
 
 import com.example.minitasks.domain.Task;
+import com.example.minitasks.domain.exceptions.TaskNotFoundException;
 import com.example.minitasks.dto.CreateTaskDTO;
 import com.example.minitasks.dto.TaskResponseDTO;
 import com.example.minitasks.repository.TaskRepository;
@@ -21,6 +22,10 @@ public class TaskService {
     }
 
     public TaskResponseDTO completeTask(Long id) {
-        throw new UnsupportedOperationException("Pending implementation");
+        Task task = repository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+        task.setDone(true);
+        Task saved = repository.save(task);
+        return new TaskResponseDTO(saved.getId(), saved.getTitle(), saved.isDone());
     }
 }
