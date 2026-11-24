@@ -10,6 +10,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,5 +36,14 @@ class TaskControllerV2Test {
                 .andExpect(header().string("Location", "/v2/tasks/1"))
                 .andExpect(jsonPath("$.title").value("Primera"))
                 .andExpect(jsonPath("$.done").value(false));
+    }
+
+    @Test
+    void completesTask() throws Exception {
+        when(service.completeTask(1L)).thenReturn(new TaskResponseDTO(1L, "Primera", true));
+
+        mvc.perform(patch("/v2/tasks/1/complete"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.done").value(true));
     }
 }
