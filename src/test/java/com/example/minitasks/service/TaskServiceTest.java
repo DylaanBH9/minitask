@@ -55,4 +55,17 @@ class TaskServiceTest {
 
         assertThat(result.done()).isTrue();
     }
+
+    @Test
+    void completeTwiceKeepsTaskDone() {
+        Task task = new Task("Repasar Spring Boot");
+        task.setId(1L);
+        when(repository.findById(1L)).thenReturn(Optional.of(task));
+        when(repository.save(any(Task.class))).thenAnswer(call -> call.getArgument(0));
+
+        service.completeTask(1L);
+        TaskResponseDTO result = service.completeTask(1L);
+
+        assertThat(result.done()).isTrue();
+    }
 }
