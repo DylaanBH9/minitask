@@ -1,5 +1,6 @@
 package com.example.minitasks.web;
 
+import com.example.minitasks.domain.exceptions.TaskNotFoundException;
 import com.example.minitasks.dto.CreateTaskDTO;
 import com.example.minitasks.dto.TaskResponseDTO;
 import com.example.minitasks.service.TaskService;
@@ -34,6 +35,10 @@ public class TaskControllerV2 {
 
     @PatchMapping("/{id}/complete")
     public ResponseEntity<TaskResponseDTO> complete(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(service.completeTask(id));
+        try {
+            return ResponseEntity.ok(service.completeTask(id));
+        } catch (TaskNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
